@@ -1,18 +1,47 @@
 #include <iostream>
-#include <string>
 #include <vector>
-#include <sqlite3.h>
+#include <fstream>
+#include <sstream>
+#include <string>
 //#include <gtk/gtk.h>
 
 using namespace std;
 
-char guess; //Answer user inputs for question.
+string upper(string s);
+
+bool sameString(string s1, string s2);
+
+string upper(string s){
+    string conv;
+    for(short i = 0; i<s.length();i++)
+        conv += toupper(s[i]);
+    
+    return conv;
+    
+}
+
+bool sameString(string s1, string s2){
+    bool same = true;
+    if(s1.length() == s2.length()){
+        for(int i = 0; i < s1.length(); i++){
+            if(s1[i] != s2[i]){
+                same = false;
+            }
+        }
+    }else{
+        same = false;
+    }
+    
+    return same;
+}
+
+string guess; //Answer user inputs for question.
 int total;  //Total score.
 
 
 class Question {
 public:
-    void setValues(std::string, std::string, std::string, std::string, std::string, char);
+    void setValues(std::string, std::string, std::string, std::string, std::string, std::string);
     void askQuestion();
     
 private:
@@ -22,25 +51,74 @@ private:
     string answer_3;
     string answer_4;
     
-    char correct_answer;
-};
+    string correct_answer;
+}; //endQuestion
+
+std::vector<std::string> split(std::string strToSplit, char delimeter)
+{
+    std::stringstream ss(strToSplit);
+    std::string item;
+    std::vector<std::string> splittedStrings;
+    while (std::getline(ss, item, delimeter))
+    {
+        splittedStrings.push_back(item);
+    }
+    return splittedStrings;
+}
+
 
 int main()
 {
+    
+    fstream newfile;
+    /*
+    newfile.open("/Users/marcinrosol/documents/c++/projektquiz/questions.txt",ios::out);  // open a file to perform write operation using file object
+    
+    if(newfile.is_open())     //checking whether the file is open
+    {
+        newfile<<"Tutorials point \n"; //inserting text
+        newfile.close(); //close the file object
+    }
+     */
+    
+    newfile.open("/Users/marcinrosol/documents/c++/projektquiz/questions.txt",ios::in); //open a file to perform read operation using file object
+    if (newfile.is_open()){   //checking whether the file is open
+        string line;
+        while(getline(newfile, line)){  //read data from file object and put it into string.
+            string text = "Let;me;split;this;into;words;elo;dwa;";
+            
+            // 7 bo mamy 7 pol w obiekcie
+            // mapujemy na obiekt i dodajemy do naszej super elo bazy x  D  d  D
+            // a
+            std::vector<std::string> splittedStrings = split(text, ';');
+            
+            if(splittedStrings.size() == 7){
+                cout<<splittedStrings[0]<<endl;
+                cout<<splittedStrings[1]<<endl;
+                cout<<splittedStrings[2]<<endl;
+                cout<<splittedStrings[3]<<endl;
+                cout<<splittedStrings[4]<<endl;
+                cout<<splittedStrings[5]<<endl;
+                cout<<splittedStrings[6]<<endl;
+                cout<<7<<endl;
+            }else{
+                cout<<"Longer";
+            }
+            
+            //for(int i = 0; i < splittedStrings.size() ; i++){
+               // std::cout<<splittedStrings[i]<<std::endl;
+           // }
+            splittedStrings.clear();
+
+            cout << line << "\n";   //print the data of the string
+        }
+        newfile.close();   //close the file object.
+    }
+    
     string name;
     
     std::vector<Question> questions;
-    //db start
-    sqlite3 *db;
-    int rc;
     
-    rc = sqlite3_open("test.db", &db);
-    if(rc){
-        cout<<"error while opening db :( "<<sqlite3_errmsg(db)<<endl;
-    }else{
-        cout<<"opened db sucess"<<endl;
-    }
-    sqlite3_close(db);
     
     // db end
     
@@ -69,76 +147,51 @@ int main()
             cin.get();
             cin.ignore();
         }else
-        if(respond == "B" || (respond == "b")){
-            cout << "\n";
-            cout << "Goodbye!\n";
-            cin.ignore();
-            cin.get();
-            return 0;
-        }else
-        if(respond == "C" || (respond == "c")){
-            string newQText;
-            string newQanswer_1;
-            string newQanswer_2;
-            string newQanswer_3;
-            string newQanswer_4;
-            char newQcorrect_answer;
-            cout<<"Question text: ";
-            cin>>newQText;
-            cout<<"First answer: ";
-            cin>>newQanswer_1;
-            cout<<"Second answer: ";
-            cin>>newQanswer_2;
-            cout<<"Third answer: ";
-            cin>>newQanswer_3;
-            cout<<"Fourth answer: ";
-            cin>>newQanswer_4;
-            cout<<"Correct answer, pick a, b, c or d: ";
-            cin>>newQcorrect_answer;
-            Question newQ;
-            
-            newQ.setValues(newQText,
-                         newQanswer_1,
-                         newQanswer_2,
-                         newQanswer_3,
-                         newQanswer_4,
-                         newQcorrect_answer);
-            
-            questions.push_back(newQ);
-            // dodac do bazy danych i nastepnie pobrac do vektora questions od nowa baze danych, ale to po rozpoczaciu gry
-            
-            respond = "";
-        }else{
-            respond = "";
-            cout<<"Wrong type\n";
-        }
+            if(respond == "B" || (respond == "b")){
+                cout << "\n";
+                cout << "Goodbye!\n";
+                cin.ignore();
+                cin.get();
+                return 0;
+            }else
+                if(respond == "C" || (respond == "c")){
+                    string newQText;
+                    string newQanswer_1;
+                    string newQanswer_2;
+                    string newQanswer_3;
+                    string newQanswer_4;
+                    string newQcorrect_answer;
+                    cout<<"Question text: ";
+                    cin>>newQText;
+                    cout<<"First answer: ";
+                    cin>>newQanswer_1;
+                    cout<<"Second answer: ";
+                    cin>>newQanswer_2;
+                    cout<<"Third answer: ";
+                    cin>>newQanswer_3;
+                    cout<<"Fourth answer: ";
+                    cin>>newQanswer_4;
+                    cout<<"Correct answer, pick a, b, c or d: ";
+                    cin>>newQcorrect_answer;
+                    Question newQ;
+                    
+                    newQ.setValues(newQText,
+                                   newQanswer_1,
+                                   newQanswer_2,
+                                   newQanswer_3,
+                                   newQanswer_4,
+                                   newQcorrect_answer);
+                    
+                    questions.push_back(newQ);
+                    // dodac do bazy danych i nastepnie pobrac do vektora questions od nowa baze danych, ale to po rozpoczaciu gry
+                    
+                    respond = "";
+                }else{
+                    respond = "";
+                    cout<<"Wrong type\n";
+                }
     }
-    
-    //Ask if user wants to start quiz.
-   // cout << "Are you ready to start the quiz, " << name << "? Yes/No.\n";
-    //cin >> respond;
-  /*
-    //If user says yes, the quiz begins.
-    if (respond == "Yes" || respond == "yes") {
-        cout << "\n";
-        cout << "Good luck!\n";
-        cout << "\n";
-        cout << "Press enter to continue.";
-        cin.get();
-        cin.ignore();
-    }
-    else {
-        cout << "\n";
-        cout << "Goodbye!\n";
-        cin.ignore();
-        cin.get();
-        return 0;
-    }
-    
-    */
-    
-    
-    
+   
     Question q1;
     
     
@@ -148,7 +201,7 @@ int main()
                  "cout",
                  "char",
                  "print",
-                 'b');
+                 "b");
     
     questions.push_back(q1);
     
@@ -183,7 +236,7 @@ int main()
 }
 
 
-void Question::setValues(std::string q, std::string a1, std::string a2, std::string a3, std::string a4, char ca)
+void Question::setValues(std::string q, std::string a1, std::string a2, std::string a3, std::string a4, std::string ca)
 {
     Question_Text = q;
     answer_1 = a1;
@@ -207,7 +260,7 @@ void Question::askQuestion()
     cout << "What is your answer?" << "\n";
     cin >> guess;
     //jezeli poprawnie odpowiedzial dostaje punkciki
-    if (guess == correct_answer) {
+    if(sameString(guess, correct_answer) == true) {
         cout << "\n";
         cout << "Correct!" << "\n";
         total += 1; //dodaje 1 do wyniku
@@ -231,3 +284,5 @@ void Question::askQuestion()
         cin.ignore();
     }
 }
+
+
